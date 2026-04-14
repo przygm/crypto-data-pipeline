@@ -12,13 +12,10 @@ This project implements an end-to-end data pipeline:
 - dbt (planned)
 
 ## Data Flow
-CoinGecko API
-    ↓
-Python ingestion script
-    ↓
-Snowflake internal stage (@%raw_crypto)
-    ↓
-raw_crypto table (VARIANT)
+- CoinGecko API
+- ↓ Python ingestion script
+- ↓ Snowflake internal stage (@%raw_crypto)
+- ↓ raw_crypto table (VARIANT)
 
 ## Features
 - API ingestion
@@ -26,10 +23,8 @@ raw_crypto table (VARIANT)
 - Snowflake loading (COPY INTO)
 
 ## Setup
-1. Install dependencies:
-   pip install -r requirements.txt
-
-2. Create .env file with Snowflake credentials.
-
-3. Run ingestion script:
-   python ingest_crypto.py
+1. Install dependencies:  
+   `pip install -r requirements.txt`
+2. Create `.env` file with Snowflake credentials.
+3. Run ingestion script:  
+   `python ingest_crypto.py`
