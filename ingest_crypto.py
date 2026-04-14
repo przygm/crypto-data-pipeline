@@ -1,0 +1,49 @@
+import requests
+import json
+from datetime import datetime, UTC
+import snowflake.connector
+from dotenv import load_dotenv
+import os
+load_dotenv()
+
+url = "https://api.coingecko.com/api/v3/simple/price"
+params = {
+    "ids": "bitcoin,ethereum",
+    "vs_currencies": "usd",
+    "include_last_updated_at": "true"
+}
+
+response = requests.get(url, params=params)
+if response.status_code != 200:
+    raise Exception(f"API error: {response.status_code}")
+
+data = response.json()
+if "error" in data:
+    raise Exception(f"API returned error: {data}")
+
+# add timestamp ingestion 
+record = {
+    "ingestion_time": datetime.now(UTC).isoformat(),
+    "data": data
+}
+
+# save to file (into raw folder)
+filename = f"raw/crypto_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.json"
+with open(filename, "w") as f:
+    json.dump(record, f)
+
+conn = snowflake.connector.connect(
+    user=os.getenv("SNOWFLAKE_USER"),
+    password=os.getenv("SNOWFLAKE_PASSWORD"),
+    account=os.getenv("SNOWFLAKE_ACCOUNT"),
+    warehouse=os.getenv("SNOWFLAKE_WAREHOUSE"),
+    database=os.getenv("SNOWFLAKE_DATABASE"),
+    schema=os.getenv("SNOWFLAKE_SCHEMA")
+)
+
+cs = conn.cursor()
+
+cs.execute(f"PUT file://{os.path.abspath(filename)} @%raw_crypto")
+
+cs.close()
+conn.close()

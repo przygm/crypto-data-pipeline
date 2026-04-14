@@ -1,0 +1,159 @@
+Idealnie — to jest najlepsza decyzja pod CV 🔥
+Robimy projekt tak, żeby wyglądał jak real production pipeline na Snowflake.
+
+Jedziemy krok po kroku + konkret (kod + SQL) 👇
+
+🚀 ETAP 1: Ingestion → Snowflake Stage
+🎯 Cel:
+
+Python pobiera dane (crypto) i wrzuca do Snowflake (stage)
+
+🐍 1. Python – pobieranie danych (CoinGecko API)
+📦 instalacja:
+pip install requests snowflake-connector-python
+📄 ingest_crypto.py
+import requests
+import json
+from datetime import datetime
+import snowflake.connector
+
+# 1. Pobierz dane
+url = "https://api.coingecko.com/api/v3/simple/price"
+params = {
+    "ids": "bitcoin,ethereum",
+    "vs_currencies": "usd"
+}
+
+response = requests.get(url)
+data = response.json()
+
+# dodaj timestamp ingestion
+record = {
+    "ingestion_time": datetime.utcnow().isoformat(),
+    "data": data
+}
+
+# zapisz do pliku
+filename = f"crypto_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+with open(filename, "w") as f:
+    json.dump(record, f)
+
+# 2. Połączenie do Snowflake
+conn = snowflake.connector.connect(
+    user="YOUR_USER",
+    password="YOUR_PASSWORD",
+    account="YOUR_ACCOUNT",
+    warehouse="YOUR_WH",
+    database="YOUR_DB",
+    schema="PUBLIC"
+)
+
+cs = conn.cursor()
+
+# 3. upload do stage
+cs.execute("PUT file://{} @%raw_crypto".format(filename))
+
+cs.close()
+conn.close()
+
+❄️ 2. Snowflake – tabela RAW
+📄 SQL:
+CREATE OR REPLACE TABLE raw_crypto (
+    data VARIANT,
+    ingestion_time TIMESTAMP
+);
+📥 3. COPY INTO (ładowanie danych)
+COPY INTO raw_crypto
+FROM (
+    SELECT
+        $1:data,
+        $1:ingestion_time::timestamp
+    FROM @%raw_crypto
+)
+FILE_FORMAT = (TYPE = 'JSON');
+🔥 ETAP 1 DONE
+
+Masz:
+
+ingestion ✔
+stage ✔
+raw table ✔
+
+To już jest real data engineering, nie kurs.
+
+🚀 ETAP 2: dbt (tu robisz największe wrażenie)
+🎯 Cel:
+staging (clean data)
+model incremental
+analytics
+📦 4. dbt – staging model
+models/staging/stg_crypto.sql
+SELECT
+    data:bitcoin:usd::float AS btc_price,
+    data:ethereum:usd::float AS eth_price,
+    ingestion_time
+FROM {{ source('raw', 'raw_crypto') }}
+🔁 5. dbt incremental model
+models/marts/crypto_prices.sql
+{{ config(
+    materialized='incremental',
+    unique_key='ingestion_time'
+) }}
+
+SELECT *
+FROM {{ ref('stg_crypto') }}
+
+{% if is_incremental() %}
+WHERE ingestion_time > (SELECT MAX(ingestion_time) FROM {{ this }})
+{% endif %}
+🧪 6. dbt tests (must-have!)
+schema.yml
+version: 2
+
+models:
+  - name: stg_crypto
+    columns:
+      - name: btc_price
+        tests:
+          - not_null
+🚀 ETAP 3: SQL (tu pokazujesz seniora)
+przykłady:
+SELECT
+    DATE(ingestion_time) as day,
+    AVG(btc_price) as avg_price,
+    MAX(btc_price) as max_price
+FROM crypto_prices
+GROUP BY 1
+ORDER BY 1;
+⏱️ ETAP 4: Automatyzacja
+
+Na start:
+
+crontab -e
+*/5 * * * * python3 /path/to/ingest_crypto.py
+💣 To co właśnie budujesz (ważne)
+
+To NIE jest „projekt kursowy”.
+
+To jest:
+
+ingestion pipeline
+semi-structured data (JSON)
+Snowflake VARIANT
+incremental processing (dbt)
+
+👉 dokładnie to, czego chcą firmy
+
+🎯 Następny krok
+
+Jeśli chcesz iść dalej (polecam), mogę Ci zrobić:
+
+🔥 upgrade projektu:
+deduplikacja danych
+handling API errors
+dbt sources + docs
+dashboard (Power BI / Streamlit)
+CI/CD (GitHub Actions)
+
+Powiedz:
+👉 „idziemy dalej” – i podniosę ten projekt do poziomu, który realnie daje pracę 💪
