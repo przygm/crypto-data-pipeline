@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: raw
+    database: raw
+    schema: PUBLIC
+    tables:
+      - name: raw_crypto
+
+models:
+  - name: stg_crypto
+    columns:
+      - name: btc_price
+        tests:
+          - not_null
