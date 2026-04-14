@@ -2,4 +2,6 @@
 __pycache__/
 *.pyc
 data/
-raw/
+raw/git add .gitignore
+projekt.txt
+co instalowac.txt

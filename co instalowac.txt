@@ -1,2 +1,0 @@
-pip install requests snowflake-connector-python
-pip install python-dotenv
