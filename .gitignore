@@ -2,7 +2,7 @@
 __pycache__/
 *.pyc
 data/
-raw/git add .gitignore
+raw/
 projekt.txt
 co instalowac.txt
 # Default .gitignore content added by dbt Cloud# you shouldn't commit these into source control
