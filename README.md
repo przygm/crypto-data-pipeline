@@ -22,6 +22,10 @@ This project implements an end-to-end data pipeline:
 - JSON data handling
 - Snowflake loading (COPY INTO)
 
+## Database Setup
+Run the following script in Snowflake before using the project:
+setup/snowflake_setup.sql
+
 ## Setup
 1. Install dependencies:  
    `pip install -r requirements.txt`

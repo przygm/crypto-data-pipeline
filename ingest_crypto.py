@@ -45,5 +45,16 @@ cs = conn.cursor()
 
 cs.execute(f"PUT file://{os.path.abspath(filename)} @%raw_crypto")
 
+cs.execute("""
+COPY INTO raw_crypto
+FROM (
+    SELECT
+        $1:data,
+        $1:ingestion_time::timestamp
+    FROM @%raw_crypto
+)
+FILE_FORMAT = (TYPE = 'JSON')
+""")
+
 cs.close()
 conn.close()
