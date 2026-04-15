@@ -1,0 +1,19 @@
+version: 2 
+
+models:
+  - name: crypto_prices
+    description: "Tabela wynikowa z zagregowanymi cenami dziennymi"
+    columns:
+      - name: day
+        tests:
+          - unique
+          - not_null
+      - name: avg_btc_price
+        tests:
+          - not_null
+      - name: max_btc_price
+        tests:
+          - not_null
+      - name: min_btc_price
+        tests:
+          - not_null
