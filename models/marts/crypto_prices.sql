@@ -11,7 +11,6 @@ WITH source_data AS (
 
     {% if is_incremental() %}
     WHERE DATE(ingestion_time) >= CURRENT_DATE()
-    )
     {% endif %}
 
 )
