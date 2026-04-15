@@ -10,7 +10,7 @@ WITH source_data AS (
     FROM {{ ref('stg_crypto') }}
 
     {% if is_incremental() %}
-    WHERE DATE(ingestion_time) >= ( SELECT MAX(day) FROM {{ this }} )
+    WHERE DATE(ingestion_time) >= CURRENT_DATE() - 1
     {% endif %}
 
 )
