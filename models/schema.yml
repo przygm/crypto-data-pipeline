@@ -13,3 +13,29 @@ models:
       - name: btc_price
         tests:
           - not_null
+
+      - name: eth_price
+        tests:
+          - not_null
+
+      - name: ingestion_time
+        tests:
+          - not_null
+
+  - name: crypto_prices
+    columns:
+      - name: day
+        tests:
+          - unique
+
+      - name: avg_btc_price
+        tests:
+          - not_null
+
+      - name: max_btc_price
+        tests:
+          - not_null
+
+      - name: min_btc_price
+        tests:
+          - not_null        
