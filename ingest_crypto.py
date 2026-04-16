@@ -2,9 +2,12 @@ import requests
 import json
 from datetime import datetime, UTC
 import snowflake.connector
-from dotenv import load_dotenv
 import os
-load_dotenv()
+
+# load .env tylko lokalnie (GitHub tego nie potrzebuje)
+if os.path.exists(".env"):
+    from dotenv import load_dotenv
+    load_dotenv()
 
 url = "https://api.coingecko.com/api/v3/simple/price"
 params = {
@@ -28,6 +31,8 @@ record = {
 }
 
 # save to file (into raw folder)
+os.makedirs("raw", exist_ok=True)
+
 filename = f"raw/crypto_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.json"
 with open(filename, "w") as f:
     json.dump(record, f)

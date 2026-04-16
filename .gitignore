@@ -1,14 +1,23 @@
+# env
 .env
+
+# python
 __pycache__/
 *.pyc
-data/
+
+# data (local files)
 raw/
-projekt.txt
-co instalowac.txt
-# Default .gitignore content added by dbt Cloud# you shouldn't commit these into source control
-# these are the default directory names, adjust/add to fit your needs
+data/
+
+# logs
+logs/
+log.txt
+
+# dbt
 target/
 dbt_packages/
-logs/
-# end dbt Cloud content
 dbt_internal_packages/
+
+# local notes
+projekt.txt
+co instalowac.txt
