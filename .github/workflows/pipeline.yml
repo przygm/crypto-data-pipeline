@@ -32,6 +32,25 @@ jobs:
       - name: Run ingestion
         run: python ingest_crypto.py
 
+      - name: Create dbt profile
+        run: |
+          mkdir -p ~/.dbt
+          cat <<EOF > ~/.dbt/profiles.yml
+          crypto-data-pipeline:
+            target: dev
+            outputs:
+              dev:
+                type: snowflake
+                account: $SNOWFLAKE_ACCOUNT
+                user: $SNOWFLAKE_USER
+                password: $SNOWFLAKE_PASSWORD
+                role: ACCOUNTADMIN
+                database: CRYPTO_ANALYTICS
+                warehouse: $SNOWFLAKE_WAREHOUSE
+                schema: PUBLIC
+                threads: 1
+          EOF
+
       - name: Run dbt
         run: |
           dbt run
