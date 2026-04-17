@@ -15,7 +15,7 @@ jobs:
       SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
       SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
 
-      # 👇 RAW (Python)
+      # RAW (Python)
       SNOWFLAKE_RAW_DATABASE: CRYPTO_RAW
       SNOWFLAKE_RAW_SCHEMA: PUBLIC      
 
