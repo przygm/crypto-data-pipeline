@@ -48,7 +48,8 @@ conn = snowflake.connector.connect(
 
 cs = conn.cursor()
 
-cs.execute(f"PUT file://{os.path.abspath(filename)} @{os.getenv('SNOWFLAKE_RAW_DATABASE')}.{os.getenv('SNOWFLAKE_RAW_SCHEMA')}.%raw_crypto")
+#cs.execute(f"PUT file://{os.path.abspath(filename)} @{os.getenv('SNOWFLAKE_RAW_DATABASE')}.{os.getenv('SNOWFLAKE_RAW_SCHEMA')}.%raw_crypto")
+cs.execute(f"PUT file://{os.path.abspath(filename)} @%raw_crypto")
 
 cs.execute("""
 COPY INTO raw_crypto
