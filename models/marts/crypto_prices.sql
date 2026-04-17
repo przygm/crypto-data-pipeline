@@ -16,7 +16,7 @@ WITH source_data AS (
 )
 
 SELECT
-    DATE(ingestion_time) AS day,
+    DATE(ingestion_time_pl) AS day,
     COUNT(*) AS row_count,
     AVG(btc_price) AS avg_btc_price,
     MAX(btc_price) AS max_btc_price,
