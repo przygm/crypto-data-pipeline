@@ -3,8 +3,9 @@ import json
 from datetime import datetime, UTC
 import snowflake.connector
 import os
+import time
 
-# load .env tylko lokalnie (GitHub tego nie potrzebuje)
+# load .env (only for 'local' call from windows)
 if os.path.exists(".env"):
     from dotenv import load_dotenv
     load_dotenv()
@@ -16,13 +17,29 @@ params = {
     "include_last_updated_at": "true"
 }
 
-response = requests.get(url, params=params)
-if response.status_code != 200:
-    raise Exception(f"API error: {response.status_code}")
+MAX_RETRIES = 3
+data = None
 
-data = response.json()
-if "error" in data:
-    raise Exception(f"API returned error: {data}")
+for attempt in range(MAX_RETRIES):
+    try:
+        response = requests.get(url, params=params, timeout=10)
+
+        if response.status_code == 200:
+            data = response.json()
+            break
+        else:
+            print(f"API error: {response.status_code}")
+
+    except Exception as e:
+        print(f"Request failed: {e}")
+
+    if attempt < MAX_RETRIES - 1:
+        time.sleep(5)
+else:
+    raise Exception("API failed after retries")
+
+if not data  or  not data.get("bitcoin")  or  not data.get("ethereum"):
+    raise Exception("Missing crypto data")
 
 # add timestamp ingestion 
 record = {
@@ -46,21 +63,25 @@ conn = snowflake.connector.connect(
     schema=os.getenv("SNOWFLAKE_RAW_SCHEMA")
 )
 
-cs = conn.cursor()
+cs = None
+try:
+    cs = conn.cursor()
 
-#cs.execute(f"PUT file://{os.path.abspath(filename)} @{os.getenv('SNOWFLAKE_RAW_DATABASE')}.{os.getenv('SNOWFLAKE_RAW_SCHEMA')}.%raw_crypto")
-cs.execute(f"PUT file://{os.path.abspath(filename)} @%raw_crypto")
+    #cs.execute(f"PUT file://{os.path.abspath(filename)} @{os.getenv('SNOWFLAKE_RAW_DATABASE')}.{os.getenv('SNOWFLAKE_RAW_SCHEMA')}.%raw_crypto")
+    cs.execute(f"PUT file://{os.path.abspath(filename)} @%raw_crypto")
 
-cs.execute("""
-COPY INTO raw_crypto
-FROM (
-    SELECT
-        $1:data,
-        $1:ingestion_time::timestamp
-    FROM @%raw_crypto
-)
-FILE_FORMAT = (TYPE = 'JSON')
-""")
+    cs.execute("""
+    COPY INTO raw_crypto
+    FROM (
+        SELECT
+            $1:data,
+            $1:ingestion_time::timestamp
+        FROM @%raw_crypto
+    )
+    FILE_FORMAT = (TYPE = 'JSON')
+    """)
 
-cs.close()
-conn.close()
+finally:
+    if cs:
+        cs.close()
+    conn.close()
