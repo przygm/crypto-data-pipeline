@@ -19,12 +19,16 @@ jobs:
       SNOWFLAKE_RAW_DATABASE: CRYPTO_RAW
       SNOWFLAKE_RAW_SCHEMA: PUBLIC      
 
+      # ANALYTICS
+      SNOWFLAKE_ANALYTICS_DATABASE: CRYPTO_ANALYTICS
+      SNOWFLAKE_ANALYTICS_SCHEMA: DBT_PZYGMUNT
+
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -47,12 +51,15 @@ jobs:
                 user: $SNOWFLAKE_USER
                 password: $SNOWFLAKE_PASSWORD
                 role: ACCOUNTADMIN
-                database: CRYPTO_ANALYTICS
+                database: $SNOWFLAKE_ANALYTICS_DATABASE
                 warehouse: $SNOWFLAKE_WAREHOUSE
-                schema: DBT_PZYGMUNT
+                schema: $SNOWFLAKE_ANALYTICS_SCHEMA
                 threads: 1
           EOF
 
+      - name: Install dbt deps
+        run: dbt deps
+        
       - name: Run dbt
         run: |
           dbt run
