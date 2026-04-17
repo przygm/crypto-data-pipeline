@@ -47,7 +47,7 @@ jobs:
                 role: ACCOUNTADMIN
                 database: CRYPTO_ANALYTICS
                 warehouse: $SNOWFLAKE_WAREHOUSE
-                schema: PUBLIC
+                schema: DBT_PZYGMUNT
                 threads: 1
           EOF
 
