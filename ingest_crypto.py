@@ -42,8 +42,8 @@ conn = snowflake.connector.connect(
     password=os.getenv("SNOWFLAKE_PASSWORD"),
     account=os.getenv("SNOWFLAKE_ACCOUNT"),
     warehouse=os.getenv("SNOWFLAKE_WAREHOUSE"),
-    database=os.getenv("SNOWFLAKE_DATABASE"),
-    schema=os.getenv("SNOWFLAKE_SCHEMA")
+    database=os.getenv("SNOWFLAKE_RAW_DATABASE"),
+    schema=os.getenv("SNOWFLAKE_RAW_SCHEMA")
 )
 
 cs = conn.cursor()
