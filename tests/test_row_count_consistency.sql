@@ -1,6 +1,6 @@
 WITH raw_counts AS (
     SELECT
-        DATE(ingestion_time) AS day,
+        DATE(CONVERT_TIMEZONE('UTC', 'Europe/Warsaw', ingestion_time)) AS day,
         COUNT(*) AS cnt
     FROM {{ source('raw', 'raw_crypto') }}
     GROUP BY 1
