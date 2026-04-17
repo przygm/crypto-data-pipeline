@@ -2,9 +2,12 @@ import requests
 import json
 from datetime import datetime, UTC
 import snowflake.connector
-from dotenv import load_dotenv
 import os
-load_dotenv()
+
+# load .env tylko lokalnie (GitHub tego nie potrzebuje)
+if os.path.exists(".env"):
+    from dotenv import load_dotenv
+    load_dotenv()
 
 url = "https://api.coingecko.com/api/v3/simple/price"
 params = {
@@ -28,6 +31,8 @@ record = {
 }
 
 # save to file (into raw folder)
+os.makedirs("raw", exist_ok=True)
+
 filename = f"raw/crypto_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.json"
 with open(filename, "w") as f:
     json.dump(record, f)
@@ -37,13 +42,13 @@ conn = snowflake.connector.connect(
     password=os.getenv("SNOWFLAKE_PASSWORD"),
     account=os.getenv("SNOWFLAKE_ACCOUNT"),
     warehouse=os.getenv("SNOWFLAKE_WAREHOUSE"),
-    database=os.getenv("SNOWFLAKE_DATABASE"),
-    schema=os.getenv("SNOWFLAKE_SCHEMA")
+    database=os.getenv("SNOWFLAKE_RAW_DATABASE"),
+    schema=os.getenv("SNOWFLAKE_RAW_SCHEMA")
 )
 
 cs = conn.cursor()
 
-cs.execute(f"PUT file://{os.path.abspath(filename)} @%raw_crypto")
+cs.execute(f"PUT file://{os.path.abspath(filename)} @{os.getenv('SNOWFLAKE_RAW_DATABASE')}.{os.getenv('SNOWFLAKE_RAW_SCHEMA')}.%raw_crypto")
 
 cs.execute("""
 COPY INTO raw_crypto
