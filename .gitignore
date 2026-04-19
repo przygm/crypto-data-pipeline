@@ -1,6 +1,3 @@
-# env
-.env
-
 # python
 __pycache__/
 *.pyc
@@ -18,6 +15,40 @@ target/
 dbt_packages/
 dbt_internal_packages/
 
-# local notes
+# secrets 
+.env
+venv/
+env/
+
+# notes
 projekt.txt
 co instalowac.txt
+
+# Python 
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# data
+raw/
+data/
+*.json
+
+# logs
+*.log
+logs/
+log.txt
+
+# dbt 
+target/
+dbt_packages/
+dbt_modules/
+*.pickle
+
+# edytors and system
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
