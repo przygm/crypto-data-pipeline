@@ -40,11 +40,13 @@ https://crypto-data-pipeline-dashboard.streamlit.app/
 Install dependencies:
 pip install -r requirements.txt
 
-Create .env file:
-SNOWFLAKE_USER=
-SNOWFLAKE_PASSWORD=
-SNOWFLAKE_ACCOUNT=
-SNOWFLAKE_WAREHOUSE=
+Create `.env` file in the root directory:
+
+```env
+SNOWFLAKE_USER=twoj_user
+SNOWFLAKE_PASSWORD=twoje_haslo
+SNOWFLAKE_ACCOUNT=twoj_account
+SNOWFLAKE_WAREHOUSE=COMPUTE_WH
 SNOWFLAKE_RAW_DATABASE=CRYPTO_RAW
 SNOWFLAKE_RAW_SCHEMA=PUBLIC
 SNOWFLAKE_ANALYTICS_DATABASE=CRYPTO_ANALYTICS
