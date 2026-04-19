@@ -31,8 +31,29 @@ conn.close()
 
 st.title("Bitcoin Price History (Min/Avg/Max)")
 
-# 1. Przygotowanie danych do legendy (zamiana kolumn na wiersze)
-# Dzięki temu Altair automatycznie stworzy legendę z kolorami
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.metric(
+        label="Latest Avg Price", 
+        value=f"{df['AVG_BTC_PRICE'].iloc[-1]:,.2f} USD"
+    )
+
+with col2:
+    # Opcjonalnie: różnica w stosunku do poprzedniego dnia
+    if len(df) > 1:
+        delta = df['AVG_BTC_PRICE'].iloc[-1] - df['AVG_BTC_PRICE'].iloc[-2]
+        st.metric(label="24h Change", value=f"{delta:,.2f} USD", delta=f"{delta:,.2f}")
+
+with col3:
+    st.metric(
+        label="Day Max", 
+        value=f"{df['MAX_BTC_PRICE'].iloc[-1]:,.2f} USD"
+    )
+
+
+
 df_melted = df.melt(
     id_vars=["DAY"], 
     value_vars=["MIN_BTC_PRICE", "AVG_BTC_PRICE", "MAX_BTC_PRICE"],
@@ -40,7 +61,6 @@ df_melted = df.melt(
     value_name="Price"
 )
 
-# 2. Tworzenie wykresu
 chart = alt.Chart(df_melted).mark_line(point=True).encode(
     x=alt.X(
         "DAY:T", 
