@@ -72,7 +72,7 @@ run_pipeline.bat
 - Pipeline is automated using GitHub Actions
 - Uses GitHub Secrets for sensitive credentials (user, password, account, warehouse)
 - Runs ingestion, dbt models and tests
-- Scheduled execution via cron (best-effort timing, not guaranteed exact hourly execution)
+- Scheduled execution via cron (best-effort timing, **not guaranteed exact hourly execution**)
 
 ## Notes
 - ingestion_time is stored in UTC (best practice for pipelines)
