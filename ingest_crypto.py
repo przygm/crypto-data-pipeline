@@ -5,7 +5,7 @@ import snowflake.connector
 import os
 import time
 import logging
-from snowflake_conn import get_raw_connection
+from snowflake_conn import get_connection
 
 logging.basicConfig(
     level=logging.INFO,
@@ -68,7 +68,7 @@ with open(filename, "w") as f:
 
 logging.info(f"File saved: {filename}")
 
-conn = get_raw_connection()
+conn = get_connection("raw")
 
 cs = None
 try:

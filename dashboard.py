@@ -3,14 +3,14 @@ import snowflake.connector
 import pandas as pd
 import os
 import altair as alt
-from snowflake_conn import get_analytics_connection
+from snowflake_conn import get_connection
 
 # load .env (lokalnie)
 if os.path.exists(".env"):
     from dotenv import load_dotenv
     load_dotenv()
 
-conn = get_analytics_connection()
+conn = get_connection("analytics")
 
 query = """
 SELECT
