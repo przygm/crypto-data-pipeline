@@ -1,9 +1,11 @@
-import streamlit as st
-import snowflake.connector
-import pandas as pd
 import os
+
+import streamlit as st
+import pandas as pd
 import altair as alt
+
 from snowflake_conn import get_connection
+
 
 # load .env (lokalnie)
 if os.path.exists(".env"):
