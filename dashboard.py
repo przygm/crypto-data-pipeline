@@ -41,7 +41,6 @@ with col1:
     )
 
 with col2:
-    # Opcjonalnie: różnica w stosunku do poprzedniego dnia
     if len(df) > 1:
         delta = df['AVG_BTC_PRICE'].iloc[-1] - df['AVG_BTC_PRICE'].iloc[-2]
         st.metric(label="24h Change", value=f"{delta:,.2f} USD", delta=f"{delta:,.2f}")

@@ -4,3 +4,4 @@ requests
 dbt-snowflake
 streamlit
 pandas
+altair

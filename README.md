@@ -13,7 +13,6 @@ The project demonstrates a full data engineering workflow: ingestion, storage, t
 - Streamlit (dashboard)
 
 ## Architecture
-
 Data flow:
 - CoinGecko API
 - Python ingestion script
@@ -22,6 +21,10 @@ Data flow:
 - dbt models: stg_crypto -> crypto_prices
 - ANALYTICS table: CRYPTO_ANALYTICS.DBT_PZYGMUNT.CRYPTO_PRICES
 - Streamlit dashboard
+
+## Dashboard
+Live dashboard:
+https://crypto-data-pipeline-dashboard.streamlit.app/
 
 ## Features
 - Resilient API ingestion (retry logic, error handling)
@@ -34,7 +37,6 @@ Data flow:
 - Interactive dashboard (BTC min / avg / max price)
 
 ## Local setup
-
 Install dependencies:
 pip install -r requirements.txt
 
@@ -48,6 +50,8 @@ SNOWFLAKE_RAW_SCHEMA=PUBLIC
 SNOWFLAKE_ANALYTICS_DATABASE=CRYPTO_ANALYTICS
 SNOWFLAKE_ANALYTICS_SCHEMA=DBT_PZYGMUNT
 
+Example .env file is provided as .env.example
+
 Run pipeline locally:
 python ingest_crypto.py
 dbt run
@@ -57,23 +61,18 @@ Run dashboard:
 streamlit run dashboard.py
 
 ## Windows scheduling
+Pipeline can be executed locally using a .bat file and Windows Task Scheduler.
 
-Pipeline can be executed locally using a .bat file and Windows Task Scheduler:
-
-cd C:\programs\crypto-data-pipeline
-python ingest_crypto.py
-dbt run
-dbt test
+Run:
+run_pipeline.bat
 
 ## Automation (GitHub Actions)
-
 - Pipeline is automated using GitHub Actions
-- Uses GitHub Secrets for credentials (instead of .env)
+- Uses GitHub Secrets for sensitive credentials (user, password, account, warehouse)
 - Runs ingestion, dbt models and tests
-- Scheduled execution (not guaranteed exact timing)
+- Scheduled execution via cron (best-effort timing, not guaranteed exact hourly execution)
 
 ## Notes
-
 - ingestion_time is stored in UTC (best practice for pipelines)
-- Timezone adjustments can be applied in dbt layer
+- Timezone adjustments are applied in dbt layer
 - RAW and ANALYTICS layers are separated for clarity and scalability
