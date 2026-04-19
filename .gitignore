@@ -24,6 +24,8 @@ env/
 projekt.txt
 co instalowac.txt
 concatFiles.py
+wynik.txt
+lista.txt
 
 # Python 
 __pycache__/
