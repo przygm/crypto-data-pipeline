@@ -23,6 +23,7 @@ env/
 # notes
 projekt.txt
 co instalowac.txt
+concatFiles.py
 
 # Python 
 __pycache__/
