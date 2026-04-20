@@ -49,11 +49,11 @@ for attempt in range(MAX_RETRIES):
         time.sleep(5)
 else:
     logging.error("API failed after retries")
-    raise Exception("API failed after retries")
+    raise Exception("PIPELINE FAILED: API failed after retries")
 
 if not data or not data.get("bitcoin") or not data.get("ethereum"):
     logging.error("Missing crypto data in API response")
-    raise Exception("Missing crypto data")
+    raise Exception("PIPELINE FAILED: Missing crypto data")
 
 # add timestamp ingestion 
 record = {
@@ -97,7 +97,7 @@ try:
 
 except Exception as e:
     logging.error(f"Snowflake error: {e}")
-    raise
+    raise Exception(f"PIPELINE FAILED: Snowflake error: {e}")
 
 finally:
     if cs:
