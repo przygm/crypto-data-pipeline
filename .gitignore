@@ -4,11 +4,11 @@ venv/
 env/
 
 # notes
-projekt.txt
-co instalowac.txt
+project_notes.txt
+project_notes_2.txt
 concatFiles.py
-wynik.txt
-lista.txt
+input.txt
+output.txt
 
 # Python 
 __pycache__/

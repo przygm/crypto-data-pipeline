@@ -84,7 +84,7 @@ chart = alt.Chart(df_melted).mark_line(point=True).encode(
     x=alt.X(
         "DAY:T", 
         title="Date",
-        # only tho
+        # only those dates that are in the dataset, formatted as YYYY-MM-DD, and rotated for better readability
         axis=alt.Axis(values=df["DAY"].tolist(), format="%Y-%m-%d", labelAngle=-45)
     ),
     y=alt.Y(
@@ -97,7 +97,7 @@ chart = alt.Chart(df_melted).mark_line(point=True).encode(
         legend=alt.Legend(title="Price Types"),
         scale=alt.Scale(
             domain=["MIN_BTC_PRICE", "AVG_BTC_PRICE", "MAX_BTC_PRICE"],
-            range=["#1f77b4", "#FFA500", "#d62728"] # Niebieski, Pomarańczowy, Czerwony
+            range=["#1f77b4", "#FFA500", "#d62728"] # blue, orange, red
         )
     ),
     tooltip=["DAY:T", "Price Type:N", "Price:Q"]
