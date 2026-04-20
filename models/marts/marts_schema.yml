@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: crypto_prices
-    description: "Tabela wynikowa z zagregowanymi cenami dziennymi"
+    description: "Final table with aggregated daily prices"
     columns:
       - name: day
         tests:
