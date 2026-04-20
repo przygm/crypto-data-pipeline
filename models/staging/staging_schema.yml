@@ -9,7 +9,7 @@ sources:
 
 models:
   - name: stg_crypto
-    description: "Model oczyszczający surowe dane o cenach kryptowalut"
+    description: "Model cleaning raw cryptocurrency price data"
     columns:
       - name: btc_price
         tests:
