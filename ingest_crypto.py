@@ -91,6 +91,7 @@ try:
     )
     FILE_FORMAT = (TYPE = 'JSON')
     PURGE = TRUE
+    ON_ERROR = 'CONTINUE'
     """)
 
     logging.info("Data successfully loaded to Snowflake")

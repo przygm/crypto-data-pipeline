@@ -15,7 +15,7 @@ It follows production-like patterns such as layered architecture (RAW vs ANALYTI
 - Streamlit (dashboard)
 
 ## Architecture
-Data flow:
+### Data flow:
 - CoinGecko API
 - Python ingestion script
 - Snowflake stage (@%raw_crypto)
