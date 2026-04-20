@@ -1,5 +1,6 @@
 @echo off
-cd /d C:\programs\crypto-data-pipeline
+set PROJECT_DIR=%~dp0
+cd /d "%PROJECT_DIR%"
 
 echo. >> log.txt
 echo ========================================== >> log.txt

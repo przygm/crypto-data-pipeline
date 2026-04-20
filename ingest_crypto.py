@@ -3,11 +3,21 @@ import json
 from datetime import datetime, UTC
 import snowflake.connector
 import os
+import time
+import logging
+from snowflake_conn import get_connection
 
-# load .env tylko lokalnie (GitHub tego nie potrzebuje)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
+
+# load .env (only for 'local' call from windows)
 if os.path.exists(".env"):
     from dotenv import load_dotenv
     load_dotenv()
+
+logging.info("Starting ingestion")
 
 url = "https://api.coingecko.com/api/v3/simple/price"
 params = {
@@ -16,13 +26,32 @@ params = {
     "include_last_updated_at": "true"
 }
 
-response = requests.get(url, params=params)
-if response.status_code != 200:
-    raise Exception(f"API error: {response.status_code}")
+MAX_RETRIES = 3
+data = None
 
-data = response.json()
-if "error" in data:
-    raise Exception(f"API returned error: {data}")
+for attempt in range(MAX_RETRIES):
+    try:
+        response = requests.get(url, params=params, timeout=10)
+
+        if response.status_code == 200:
+            data = response.json()
+            logging.info("API request successful")
+            break
+        else:
+            logging.warning(f"API error: {response.status_code}")
+
+    except Exception as e:
+        logging.error(f"Request failed: {e}")
+
+    if attempt < MAX_RETRIES - 1:
+        time.sleep(5)
+else:
+    logging.error("API failed after retries")
+    raise Exception("API failed after retries")
+
+if not data or not data.get("bitcoin") or not data.get("ethereum"):
+    logging.error("Missing crypto data in API response")
+    raise Exception("Missing crypto data")
 
 # add timestamp ingestion 
 record = {
@@ -37,29 +66,38 @@ filename = f"raw/crypto_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.json"
 with open(filename, "w") as f:
     json.dump(record, f)
 
-conn = snowflake.connector.connect(
-    user=os.getenv("SNOWFLAKE_USER"),
-    password=os.getenv("SNOWFLAKE_PASSWORD"),
-    account=os.getenv("SNOWFLAKE_ACCOUNT"),
-    warehouse=os.getenv("SNOWFLAKE_WAREHOUSE"),
-    database=os.getenv("SNOWFLAKE_RAW_DATABASE"),
-    schema=os.getenv("SNOWFLAKE_RAW_SCHEMA")
-)
+logging.info(f"File saved: {filename}")
 
-cs = conn.cursor()
+conn = get_connection("raw")
 
-cs.execute(f"PUT file://{os.path.abspath(filename)} @{os.getenv('SNOWFLAKE_RAW_DATABASE')}.{os.getenv('SNOWFLAKE_RAW_SCHEMA')}.%raw_crypto")
+cs = None
+try:
+    cs = conn.cursor()
 
-cs.execute("""
-COPY INTO raw_crypto
-FROM (
-    SELECT
-        $1:data,
-        $1:ingestion_time::timestamp
-    FROM @%raw_crypto
-)
-FILE_FORMAT = (TYPE = 'JSON')
-""")
+    logging.info("Uploading file to Snowflake stage")
+    #cs.execute(f"PUT file://{os.path.abspath(filename)} @{os.getenv('SNOWFLAKE_RAW_DATABASE')}.{os.getenv('SNOWFLAKE_RAW_SCHEMA')}.%raw_crypto")
+    cs.execute(f"PUT file://{os.path.abspath(filename)} @%raw_crypto")
 
-cs.close()
-conn.close()
+    logging.info("Copying data into raw table")
+    cs.execute("""
+    COPY INTO raw_crypto
+    FROM (
+        SELECT
+            $1:data,
+            $1:ingestion_time::timestamp
+        FROM @%raw_crypto
+    )
+    FILE_FORMAT = (TYPE = 'JSON')
+    """)
+
+    logging.info("Data successfully loaded to Snowflake")
+
+except Exception as e:
+    logging.error(f"Snowflake error: {e}")
+    raise
+
+finally:
+    if cs:
+        cs.close()
+    conn.close()
+    logging.info("Connection closed")

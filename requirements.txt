@@ -2,3 +2,6 @@ snowflake-connector-python
 python-dotenv
 requests
 dbt-snowflake
+streamlit
+pandas
+altair
