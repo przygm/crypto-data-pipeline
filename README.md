@@ -5,7 +5,7 @@ End-to-end data pipeline that ingests cryptocurrency data from API, stores it in
 
 The project demonstrates a full data engineering workflow: ingestion, storage, transformation, orchestration, and visualization.
 
-The project demonstrates production-like patterns such as layered architecture (RAW vs ANALYTICS), incremental processing, and automated orchestration.
+It follows production-like patterns such as layered architecture (RAW vs ANALYTICS), incremental processing, and automated orchestration.
 
 ## Tech stack
 - Python (API ingestion, retry logic, logging)
@@ -31,6 +31,7 @@ https://crypto-data-pipeline-dashboard.streamlit.app/
 ## Features
 - Separation of RAW and ANALYTICS layers
 - Incremental transformations in dbt
+- Idempotent ingestion (safe to rerun without duplicating data at daily aggregation level)
 - Automated pipeline execution (GitHub Actions / Windows Scheduler)
 - Resilient API ingestion (retry logic, error handling)
 - Data quality tests (dbt test)

@@ -43,7 +43,7 @@ col_title, col_refresh = st.columns([5, 1])
 
 with col_title:
     st.title("Bitcoin Price History (Min/Avg/Max)")
-    st.caption("Data source: Snowflake Analytics Layer | Automatically updated every 1 hour")
+    st.caption("Data source: Snowflake Analytics Layer | Updated hourly")
 
 with col_refresh:
     st.markdown("<br>", unsafe_allow_html=True) 
