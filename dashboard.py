@@ -8,7 +8,7 @@ from snowflake_conn import get_connection
 
 st.set_page_config(layout="wide", page_title="Crypto Dashboard")
 
-# load .env (lokalnie)
+# load .env (locally)
 if os.path.exists(".env"):
     from dotenv import load_dotenv
     load_dotenv()
@@ -84,7 +84,7 @@ chart = alt.Chart(df_melted).mark_line(point=True).encode(
     x=alt.X(
         "DAY:T", 
         title="Date",
-        # Wymuszamy pokazywanie tylko tych dni, które są w danych
+        # only tho
         axis=alt.Axis(values=df["DAY"].tolist(), format="%Y-%m-%d", labelAngle=-45)
     ),
     y=alt.Y(
