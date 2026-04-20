@@ -1,20 +1,3 @@
-# python
-__pycache__/
-*.pyc
-
-# data (local files)
-raw/
-data/
-
-# logs
-logs/
-log.txt
-
-# dbt
-target/
-dbt_packages/
-dbt_internal_packages/
-
 # secrets 
 .env
 venv/
@@ -50,7 +33,7 @@ dbt_packages/
 dbt_modules/
 *.pickle
 
-# edytors and system
+# editors and system
 .vscode/
 .idea/
 .DS_Store

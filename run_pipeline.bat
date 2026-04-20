@@ -12,11 +12,10 @@ python ingest_crypto.py >> log.txt 2>&1
 
 echo ------------------------------------------ >> log.txt
 echo [2.0/3] Cleaning dbt artifacts... >> log.txt
-:: DODAJ TO: Czyści folder target i stare wersje modeli z pamięci
+:: clear folder target and old model versions from memory
 call dbt clean >> log.txt 2>&1
 
 echo [2.1/3] Running dbt models... >> log.txt
-:: Używamy 'call', żeby skrypt kontynuował pracę po wykonaniu komendy dbt
 call dbt run >> log.txt 2>&1
 
 echo ------------------------------------------ >> log.txt

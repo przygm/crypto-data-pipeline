@@ -5,6 +5,8 @@ End-to-end data pipeline that ingests cryptocurrency data from API, stores it in
 
 The project demonstrates a full data engineering workflow: ingestion, storage, transformation, orchestration, and visualization.
 
+The project is designed to demonstrate production-like patterns such as layered architecture (RAW vs ANALYTICS), incremental processing, and automated orchestration.
+
 ## Tech stack
 - Python (API ingestion, retry logic, logging)
 - Snowflake (data warehouse, RAW + ANALYTICS layers)
@@ -27,13 +29,13 @@ Live dashboard:
 https://crypto-data-pipeline-dashboard.streamlit.app/
 
 ## Features
-- Resilient API ingestion (retry logic, error handling)
-- JSON data loading to Snowflake (PUT + COPY INTO)
 - Separation of RAW and ANALYTICS layers
 - Incremental transformations in dbt
+- Automated pipeline execution (GitHub Actions / Windows Scheduler)
+- Resilient API ingestion (retry logic, error handling)
 - Data quality tests (dbt test)
+- JSON data loading to Snowflake (PUT + COPY INTO)
 - Logging (Python + GitHub logs)
-- Automated pipeline execution
 - Interactive dashboard (BTC min / avg / max price)
 
 ## Local setup
@@ -72,9 +74,10 @@ run_pipeline.bat
 - Pipeline is automated using GitHub Actions
 - Uses GitHub Secrets for sensitive credentials (user, password, account, warehouse)
 - Runs ingestion, dbt models and tests
-- Scheduled execution via cron (best-effort timing, **not guaranteed exact hourly execution**)
+- Scheduled execution via cron (best-effort timing, not guaranteed exact hourly execution)
 
 ## Notes
 - ingestion_time is stored in UTC (best practice for pipelines)
-- Timezone adjustments are applied in dbt layer
+- Data is stored in UTC and adjusted to local timezone (Europe/Warsaw) in the analytics layer
 - RAW and ANALYTICS layers are separated for clarity and scalability
+- dbt is executed in dbt Cloud (separate environment configuration)

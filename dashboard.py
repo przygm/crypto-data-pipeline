@@ -6,32 +6,50 @@ import altair as alt
 
 from snowflake_conn import get_connection
 
+st.set_page_config(layout="wide", page_title="Crypto Dashboard")
 
 # load .env (lokalnie)
 if os.path.exists(".env"):
     from dotenv import load_dotenv
     load_dotenv()
 
-conn = get_connection("analytics")
+@st.cache_data(ttl=3600)
+def load_data():
+    conn = get_connection("analytics")
 
-query = """
-SELECT
-    day,
-    avg_btc_price,
-    min_btc_price,
-    max_btc_price
-FROM crypto_prices
-ORDER BY day
-"""
+    query = """
+    SELECT
+        day,
+        avg_btc_price,
+        min_btc_price,
+        max_btc_price
+    FROM crypto_prices
+    ORDER BY day
+    """
 
-df = pd.read_sql(query, conn)
-conn.close()
+    df = pd.read_sql(query, conn)
+    conn.close()
+
+    return df
+
+
+df = load_data()
 
 # ======================
 # DASHBOARD
 # ======================
 
-st.title("Bitcoin Price History (Min/Avg/Max)")
+col_title, col_refresh = st.columns([5, 1]) 
+
+with col_title:
+    st.title("Bitcoin Price History (Min/Avg/Max)")
+    st.caption("Data source: Snowflake Analytics Layer | Automatically updated every 1 hour")
+
+with col_refresh:
+    st.markdown("<br>", unsafe_allow_html=True) 
+    if st.button("🔄 Refresh", use_container_width=True):
+        st.cache_data.clear()
+        st.rerun()
 
 
 col1, col2, col3 = st.columns(3)

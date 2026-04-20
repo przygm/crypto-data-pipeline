@@ -1,10 +1,12 @@
-import requests
+# standard library
 import json
-from datetime import datetime, UTC
-import snowflake.connector
 import os
 import time
 import logging
+from datetime import datetime, UTC
+
+import requests
+
 from snowflake_conn import get_connection
 
 logging.basicConfig(
@@ -88,6 +90,7 @@ try:
         FROM @%raw_crypto
     )
     FILE_FORMAT = (TYPE = 'JSON')
+    PURGE = TRUE
     """)
 
     logging.info("Data successfully loaded to Snowflake")
