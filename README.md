@@ -5,7 +5,7 @@ End-to-end data pipeline that ingests cryptocurrency data from API, stores it in
 
 The project demonstrates a full data engineering workflow: ingestion, storage, transformation, orchestration, and visualization.
 
-The project is designed to demonstrate production-like patterns such as layered architecture (RAW vs ANALYTICS), incremental processing, and automated orchestration.
+The project demonstrates production-like patterns such as layered architecture (RAW vs ANALYTICS), incremental processing, and automated orchestration.
 
 ## Tech stack
 - Python (API ingestion, retry logic, logging)
@@ -78,6 +78,6 @@ run_pipeline.bat
 
 ## Notes
 - ingestion_time is stored in UTC (best practice for pipelines)
-- Data is stored in UTC and adjusted to local timezone (Europe/Warsaw) in the analytics layer
+- The ingestion timestamp is stored in UTC and converted to local timezone (Europe/Warsaw) in the analytics layer
 - RAW and ANALYTICS layers are separated for clarity and scalability
-- dbt is executed in dbt Cloud (separate environment configuration)
+- dbt transformations are executed in dbt Cloud (separate environment configuration)

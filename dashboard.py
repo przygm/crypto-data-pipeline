@@ -48,7 +48,7 @@ with col_title:
 with col_refresh:
     st.markdown("<br>", unsafe_allow_html=True) 
     if st.button("🔄 Refresh", use_container_width=True):
-        st.cache_data.clear()
+        load_data.clear()
         st.rerun()
 
 
