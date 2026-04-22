@@ -3,13 +3,15 @@ import os
 import streamlit as st
 import pandas as pd
 import altair as alt
-from streamlit_autorefresh import st_autorefresh
 
 from snowflake_conn import get_connection
 
 st.set_page_config(layout="wide", page_title="Crypto Dashboard")
 
-st_autorefresh(interval=3600 * 1000, limit=None, key="data_refresh")
+st.markdown(
+    '<meta http-equiv="refresh" content="3600">', 
+    unsafe_allow_html=True
+)
 
 # load .env (locally)
 if os.path.exists(".env"):
