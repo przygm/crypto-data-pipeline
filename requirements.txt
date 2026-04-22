@@ -5,3 +5,4 @@ dbt-snowflake
 streamlit
 pandas
 altair
+streamlit-autorefresh
