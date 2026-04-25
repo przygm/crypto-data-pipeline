@@ -18,28 +18,30 @@ if os.path.exists(".env"):
     from dotenv import load_dotenv
     load_dotenv()
 
-@st.cache_data(ttl=3600)
-def load_data():
+def get_last_update():
     conn = get_connection("analytics")
-
-    query = """
-    SELECT
-        day,
-        avg_btc_price,
-        min_btc_price,
-        max_btc_price
-    FROM crypto_prices
-    ORDER BY day
-    """
-
+    query = "SELECT MAX(day) as last_day FROM crypto_prices"
     df = pd.read_sql(query, conn)
     conn.close()
+    return df["LAST_DAY"].iloc[0]
 
+@st.cache_data
+def load_data(last_update):
+    conn = get_connection("analytics")
+    query = """
+    SELECT day, row_count as ingest_records_count, avg_btc_price, min_btc_price, max_btc_price
+    FROM crypto_prices
+    ORDER BY day desc
+    """
+    df = pd.read_sql(query, conn)
+    conn.close()
     return df
 
 
-df = load_data()
-
+last_update = get_last_update()
+df = load_data(last_update)
+df_display = df.head(20).reset_index(drop=True)   
+df_chart = df.sort_values("DAY")                  
 # ======================
 # DASHBOARD
 # ======================
@@ -62,23 +64,23 @@ col1, col2, col3 = st.columns(3)
 with col1:
     st.metric(
         label="Latest Avg Price", 
-        value=f"{df['AVG_BTC_PRICE'].iloc[-1]:,.2f} USD"
+        value=f"{df['AVG_BTC_PRICE'].iloc[0]:,.2f} USD"
     )
 
 with col2:
     if len(df) > 1:
-        delta = df['AVG_BTC_PRICE'].iloc[-1] - df['AVG_BTC_PRICE'].iloc[-2]
+        delta = df['AVG_BTC_PRICE'].iloc[0] - df['AVG_BTC_PRICE'].iloc[1]
         st.metric(label="24h Change", value=f"{delta:,.2f} USD", delta=f"{delta:,.2f}")
 
 with col3:
     st.metric(
         label="Day Max", 
-        value=f"{df['MAX_BTC_PRICE'].iloc[-1]:,.2f} USD"
+        value=f"{df['MAX_BTC_PRICE'].iloc[0]:,.2f} USD"
     )
 
 
 
-df_melted = df.melt(
+df_melted = df_chart.melt(
     id_vars=["DAY"], 
     value_vars=["MIN_BTC_PRICE", "AVG_BTC_PRICE", "MAX_BTC_PRICE"],
     var_name="Price Type", 
@@ -112,4 +114,4 @@ st.altair_chart(chart, use_container_width=True)
 
 # table
 st.subheader("Raw data")
-st.dataframe(df.tail(20))
+st.dataframe(df_display, use_container_width=True, hide_index=True)
