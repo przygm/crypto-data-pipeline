@@ -1,3 +1,4 @@
+import sys
 import os
 import subprocess
 
@@ -67,14 +68,14 @@ with col_ingest:
     if st.button("🚀 Ingest Manually", use_container_width=True):
         if client_ip:
             with st.spinner("Running full pipeline (Ingest -> dbt)..."):
-                ingest_proc = subprocess.run(["python", "ingest_crypto.py", client_ip], capture_output=True, text=True)
+                ingest_proc = subprocess.run([sys.executable, "ingest_crypto.py", client_ip], capture_output=True, text=True)
                 if ingest_proc.returncode == 0:
                     st.toast(f"Ingestion successful! Starting dbt...")
                     
-                    subprocess.run(["dbt", "deps"], capture_output=True)
+                    subprocess.run("dbt deps", shell=True, capture_output=True)
 
-                    dbt_proc = subprocess.run(["dbt", "run"], capture_output=True, text=True)
-
+                    dbt_proc = subprocess.run("dbt run", shell=True, capture_output=True, text=True)
+                    
                     if dbt_proc.returncode == 0:
                         st.success("Pipeline finished successfully!")
                         st.info("Data is updated in Snowflake. You can click **🔄 Refresh** to see changes.")
