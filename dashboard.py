@@ -72,9 +72,9 @@ with col_ingest:
                 if ingest_proc.returncode == 0:
                     st.toast(f"Ingestion successful! Starting dbt...")
                     
-                    subprocess.run("dbt deps", shell=True, capture_output=True)
+                    subprocess.run("dbt deps --profiles-dir .", shell=True, capture_output=True)
 
-                    dbt_proc = subprocess.run("dbt run", shell=True, capture_output=True, text=True)
+                    dbt_proc = subprocess.run("dbt run --profiles-dir .", shell=True, capture_output=True, text=True)
                     
                     if dbt_proc.returncode == 0:
                         st.success("Pipeline finished successfully!")
