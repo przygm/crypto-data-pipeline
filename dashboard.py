@@ -1,12 +1,16 @@
 import os
+import subprocess
 
 import streamlit as st
 import pandas as pd
 import altair as alt
+from streamlit_javascript import st_javascript
 
 from snowflake_conn import get_connection
 
 st.set_page_config(layout="wide", page_title="Crypto Dashboard")
+
+client_ip = st_javascript("await fetch('https://api.ipify.org?format=json').then(res => res.json()).then(res => res.ip)")
 
 st.markdown(
     '<meta http-equiv="refresh" content="3600">', 
@@ -46,7 +50,7 @@ df_chart = df.sort_values("DAY")
 # DASHBOARD
 # ======================
 
-col_title, col_refresh = st.columns([5, 1]) 
+col_title, col_refresh, col_ingest = st.columns([5, 1, 1]) 
 
 with col_title:
     st.title("Bitcoin Price History (Min/Avg/Max)")
@@ -58,6 +62,32 @@ with col_refresh:
         load_data.clear()
         st.rerun()
 
+with col_ingest:
+    st.markdown("<br>", unsafe_allow_html=True) 
+    if st.button("🚀 Ingest Manually", use_container_width=True):
+        if client_ip:
+            with st.spinner("Running full pipeline (Ingest -> dbt)..."):
+                ingest_proc = subprocess.run(["python", "ingest_crypto.py", client_ip], capture_output=True, text=True)
+                if ingest_proc.returncode == 0:
+                    st.toast(f"Ingestion successful! Starting dbt...")
+                    
+                    subprocess.run(["dbt", "deps"], capture_output=True)
+
+                    dbt_proc = subprocess.run(["dbt", "run"], capture_output=True, text=True)
+
+                    if dbt_proc.returncode == 0:
+                        st.success("Pipeline finished successfully!")
+                        st.info("Data is updated in Snowflake. You can click **🔄 Refresh** to see changes.")
+                        load_data.clear()
+                    else:
+                        st.error("dbt run failed!")
+                        st.code(dbt_proc.stderr)
+                else:
+                    st.error("Ingestion failed!")
+                    st.text("Error Details:")
+                    st.code(ingest_proc.stderr)
+        else:
+            st.warning("Detecting IP... try again.")
 
 col1, col2, col3 = st.columns(3)
 

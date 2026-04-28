@@ -1,4 +1,5 @@
 # standard library
+import sys
 import json
 import os
 import time
@@ -8,6 +9,8 @@ from datetime import datetime, UTC
 import requests
 
 from snowflake_conn import get_connection
+
+who_triggered = sys.argv[1] if len(sys.argv) > 1 else "AUTOMAT"
 
 logging.basicConfig(
     level=logging.INFO,
@@ -57,8 +60,9 @@ if not data or not data.get("bitcoin") or not data.get("ethereum"):
 
 # add timestamp ingestion 
 record = {
+    "data": data,
     "ingestion_time": datetime.now(UTC).isoformat(),
-    "data": data
+    "ingested_by": who_triggered
 }
 
 # save to file (into raw folder)
@@ -86,7 +90,8 @@ try:
     FROM (
         SELECT
             $1:data,
-            $1:ingestion_time::timestamp
+            $1:ingestion_time::timestamp,
+            $1:ingested_by::string
         FROM @%raw_crypto
     )
     FILE_FORMAT = (TYPE = 'JSON')

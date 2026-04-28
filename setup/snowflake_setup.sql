@@ -5,3 +5,6 @@ CREATE OR REPLACE TABLE CRYPTO_RAW.public.raw_crypto (
     data VARIANT,
     ingestion_time TIMESTAMP
 );
+
+ALTER TABLE CRYPTO_RAW.public.raw_crypto 
+ADD COLUMN ingested_by STRING;
