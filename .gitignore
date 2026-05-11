@@ -1,5 +1,6 @@
 # secrets 
 .env
+.envpz
 venv/
 env/
 
@@ -26,6 +27,7 @@ data/
 *.log
 logs/
 log.txt
+log_old.txt
 
 # dbt 
 target/

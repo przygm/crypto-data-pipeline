@@ -1,6 +1,12 @@
 @echo off
+
 set PROJECT_DIR=%~dp0
 cd /d "%PROJECT_DIR%"
+
+if exist .env (
+    echo [0/3] Loading environment variables from .env... >> log.txt
+    for /f "tokens=*" %%i in (.env) do set %%i
+)
 
 echo. >> log.txt
 echo ========================================== >> log.txt
