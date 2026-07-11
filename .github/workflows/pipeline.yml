@@ -1,4 +1,4 @@
-name: Crypto Pipeline
+name: Crypto Pipeline 
 
 on:
   schedule:
