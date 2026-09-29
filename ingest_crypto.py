@@ -7,8 +7,9 @@ import logging
 from datetime import datetime, UTC
 
 import requests
-
+ 
 from snowflake_conn import get_connection
+
 
 who_triggered = sys.argv[1] if len(sys.argv) > 1 else "AUTOMAT"
 
@@ -28,7 +29,8 @@ url = "https://api.coingecko.com/api/v3/simple/price"
 params = {
     "ids": "bitcoin,ethereum",
     "vs_currencies": "usd",
-    "include_last_updated_at": "true"
+    "include_last_updated_at": "true",
+    "x_cg_demo_api_key": os.getenv("COINGECKO_API_KEY")
 }
 
 MAX_RETRIES = 3
